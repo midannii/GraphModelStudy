@@ -52,7 +52,7 @@ model = GCN(nfeat=features.shape[1], # nfeat = 1433
 optimizer = optim.Adam(model.parameters(),
                        lr=args.lr, weight_decay=args.weight_decay)
 
-if args.cuda:
+if args.cuda: 
     model.cuda()
     features = features.cuda()
     adj = adj.cuda()
@@ -62,23 +62,23 @@ if args.cuda:
     idx_test = idx_test.cuda()
 
 
-def train(epoch):
+def train(epoch): 
     t = time.time()
     model.train()
     optimizer.zero_grad()
-    output = model(features, adj)
+    output = model(features, adj) # forward
     loss_train = F.nll_loss(output[idx_train], labels[idx_train])
     acc_train = accuracy(output[idx_train], labels[idx_train])
     loss_train.backward()
     optimizer.step()
 
-    if not args.fastmode:
+    if not args.fastmode: # 매 epoch마다 validate 진행
         # Evaluate validation set performance separately,
         # deactivates dropout during validation run.
         model.eval()
         output = model(features, adj)
 
-    loss_val = F.nll_loss(output[idx_val], labels[idx_val])
+    loss_val = F.nll_loss(output[idx_val], labels[idx_val]) # CE loss 적용 (CEloss는 LogSoftmax와 NLL loss가 포함!)
     acc_val = accuracy(output[idx_val], labels[idx_val])
     print('Epoch: {:04d}'.format(epoch+1),
           'loss_train: {:.4f}'.format(loss_train.item()),
