@@ -9,7 +9,7 @@ For a high-level introduction to GCNs, see:
 
 Thomas Kipf, [Graph Convolutional Networks](http://tkipf.github.io/graph-convolutional-networks/) (2016)
 
-![Graph Convolutional Networks](img/figure.png)
+![Graph Convolutional Networks](figure.png)
 
 ### Semi-Supervised Node Classification
 
