@@ -30,17 +30,17 @@ def load_data(path="../data/cora/", dataset="cora"):
                         shape=(labels.shape[0], labels.shape[0]),
                         dtype=np.float32)
 
-    # build symmetric adjacency matrix -> directed adjacency matrix를 undirected로 바꿔줌
+    # build symmetric adjacency matrix
     adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
 
     features = normalize(features)
-    adj = normalize(adj + sp.eye(adj.shape[0])) # symmertric adjacency matrix를 만들고 indentity matrix와 더해줌 (Ã = A + I_N)
+    adj = normalize(adj + sp.eye(adj.shape[0])) # symmertric adjacency matrix를 만들고 indentity matrix와 더해줌
 
-    idx_train = range(2000) # label은 2708개인데 1500까지만 나눈 이유,,,?
-    idx_val = range(2000, 2200)
-    idx_test = range(2200, 2700)
+    idx_train = range(140)
+    idx_val = range(200, 500)
+    idx_test = range(500, 1500)
 
-    features = torch.FloatTensor(np.array(features.todense())) # torch.Size([2708, 1433]), todense는 CSR형태의 sparse matrix를 ndarray로 바꿔줌
+    features = torch.FloatTensor(np.array(features.todense())) # torch.Size([2708, 1433])
     labels = torch.LongTensor(np.where(labels)[1]) # torch.Size([2708])
     adj = sparse_mx_to_torch_sparse_tensor(adj) # torch sparse tensor로 바꿔줌
 
@@ -53,23 +53,13 @@ def load_data(path="../data/cora/", dataset="cora"):
 
 def normalize(mx):
     """Row-normalize sparse matrix"""
-    rowsum = np.array(mx.sum(1)) # (2708, 1)
-    r_inv = np.power(rowsum, -1).flatten() # (2708, ) 원본 논문에선 (-1/2)를 썼는데 이렇게 해도 성능변화가 거의 없다고함
-    r_inv[np.isinf(r_inv)] = 0. #diagonal 생성
-    r_mat_inv = sp.diags(r_inv) # sparse matrix 생성 (2708 X 2708)
-    mx = r_mat_inv.dot(mx) # DA
+    rowsum = np.array(mx.sum(1))
+    r_inv = np.power(rowsum, -1).flatten()
+    r_inv[np.isinf(r_inv)] = 0.
+    r_mat_inv = sp.diags(r_inv)
+    mx = r_mat_inv.dot(mx)
     return mx
 
-''' from tensorflow-GCN. 여기서는 정확히 D^(-1/2)AD^(1/2)로 구현함
-def normalize_adj(adj):
-    """Symmetrically normalize adjacency matrix."""
-    adj = sp.coo_matrix(adj)
-    rowsum = np.array(adj.sum(1))
-    d_inv_sqrt = np.power(rowsum, -0.5).flatten()
-    d_inv_sqrt[np.isinf(d_inv_sqrt)] = 0.
-    d_mat_inv_sqrt = sp.diags(d_inv_sqrt)
-    return adj.dot(d_mat_inv_sqrt).transpose().dot(d_mat_inv_sqrt).tocoo()
-'''
 
 def accuracy(output, labels):
     preds = output.max(1)[1].type_as(labels)
