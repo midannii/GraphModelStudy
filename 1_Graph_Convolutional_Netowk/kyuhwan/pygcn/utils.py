@@ -1,7 +1,9 @@
 import numpy as np
 import scipy.sparse as sp
 import torch
-
+import json
+from networkx.readwrite import json_graph
+import networkx as nx
 
 def encode_onehot(labels): # 맨 뒤에 있는 label 처리
     classes = set(labels) # {'Reinforcement_Learning', 'Neural_Networks', 'Case_Based', 'Probabilistic_Methods', 'Theory', 'Rule_Learning', 'Genetic_Algorithms'}
@@ -12,13 +14,13 @@ def encode_onehot(labels): # 맨 뒤에 있는 label 처리
     return labels_onehot # (2708, 7)
 
 
-def load_data(path="../data/cora/", dataset="cora"):
+def load_data(path="../data/cora/", dataset="cora"): # Node : 2708개, Feat 개수 : 1435
     """Load citation network dataset (cora only for now)"""
     print(f'Loading {dataset} dataset...')
 
     idx_features_labels = np.genfromtxt(f"{path}{dataset}.content", dtype=np.dtype(str)) # (2708, 1435)
     features = sp.csr_matrix(idx_features_labels[:, 1:-1], dtype=np.float32) # (2708, 1433)
-    labels = encode_onehot(idx_features_labels[:, -1]) # label의 one-hot encoding 생성
+    labels = encode_onehot(idx_features_labels[:, -1]) # label의 one-hot encoding 생성 (2708, 7)
 
     # build graph
     idx = np.array(idx_features_labels[:, 0], dtype=np.int32) # (2708,) citation index 파악
@@ -26,7 +28,7 @@ def load_data(path="../data/cora/", dataset="cora"):
     edges_unordered = np.genfromtxt(f"{path}{dataset}.cites", dtype=np.int32) #(5429, 2)
     edges = np.array(list(map(idx_map.get, edges_unordered.flatten())), #(5429, 2), 각 노드를 index로 변환하여 범위 제한
                      dtype=np.int32).reshape(edges_unordered.shape)
-    adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])), # 인접행렬 생성 (2708, 2708)
+    adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])), # 인접행렬 생성 <2708x2708 sparse matrix of type '<class 'numpy.float32'>'	with 5429 stored elements in COOrdinate format>
                         shape=(labels.shape[0], labels.shape[0]),
                         dtype=np.float32)
 
@@ -50,6 +52,41 @@ def load_data(path="../data/cora/", dataset="cora"):
 
     return adj, features, labels, idx_train, idx_val, idx_test
 
+################################################################################################ added
+def load_data_ppi(path="../data/ppi/", dataset="ppi"): # Node : 56944개, class 개수 : 121
+    """Load ppi network dataset"""
+    print(f'Loading {dataset} dataset...')
+
+    G = json_graph.node_link_graph(json.load(open(f"{path}{dataset}-G.json")))
+
+    labels = json.load(open(f"{path}{dataset}-class_map.json")) # length : 56944
+    labels = sorted({int(i):l for i, l in labels.items()}.items())
+
+    feats = np.load(f"{path}{dataset}-feats.npy") # (56944, 50)
+    features = sp.csr_matrix(feats, dtype=np.float32) # sparse matrix (56944, 50)
+
+    adj = nx.adjacency_matrix(G, dtype=np.float32) # <56944x56944 sparse matrix of type '<class 'numpy.float32'>'	with 1612348 stored elements in Compressed Sparse Row format>
+
+    # build symmetric adjacency matrix
+    adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
+
+    features = normalize(features)
+    adj = normalize(adj + sp.eye(adj.shape[0])) # symmertric adjacency matrix를 만들고 indentity matrix와 더해줌
+
+    idx_train = [n for n in G.nodes() if not G.nodes[n]['val'] and not G.nodes[n]['test']] # 0~44905
+    idx_val = [n for n in G.nodes() if G.nodes[n]['val']] # 44906 ~ 51419
+    idx_test = [n for n in G.nodes() if G.nodes[n]['test']] #51420 ~ 56943
+
+    features = torch.FloatTensor(np.array(features.todense())) # torch.Size([56944, 50])
+    labels = torch.LongTensor(np.where(labels)[1]) # torch.Size([56944])
+    adj = sparse_mx_to_torch_sparse_tensor(adj) # torch sparse tensor로 바꿔줌
+
+    idx_train = torch.LongTensor(idx_train)
+    idx_val = torch.LongTensor(idx_val)
+    idx_test = torch.LongTensor(idx_test)
+
+    return adj, features, labels, idx_train, idx_val, idx_test
+################################################################################################
 
 def normalize(mx):
     """Row-normalize sparse matrix"""

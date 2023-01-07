@@ -10,7 +10,7 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 from setproctitle import setproctitle
-from utils import load_data, accuracy
+from utils import load_data, load_data_ppi, accuracy
 from models import GCN
 
 setproctitle("kyuhwan_GCN")
@@ -42,7 +42,8 @@ if args.cuda:
     torch.cuda.manual_seed(args.seed)
 
 # Load data
-adj, features, labels, idx_train, idx_val, idx_test = load_data()
+#adj, features, labels, idx_train, idx_val, idx_test = load_data()
+adj, features, labels, idx_train, idx_val, idx_test = load_data_ppi()
 
 # Model and optimizer
 model = GCN(nfeat=features.shape[1], # nfeat = 1433
