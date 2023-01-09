@@ -9,49 +9,47 @@ For a high-level introduction to GCNs, see:
 
 Thomas Kipf, [Graph Convolutional Networks](http://tkipf.github.io/graph-convolutional-networks/) (2016)
 
-![Graph Convolutional Networks](figure.png)
+![Graph Convolutional Networks](img/figure.png)
 
 ### Semi-Supervised Node Classification
 
 This implementation makes use of the Cora dataset from [2].
 
-#### GCN
+- GCN
   Spectral Graph Convolutions & Layer-Wise Linear Model
   Using node feature as signal, transformed signal to Fourier domain
-  But for expensive computation cost, approximated by a truncated expansion in term of Chebyshev polynomials $T_k(x)$  
-  $$ g_\theta \star x \approx \sum_{k=0}^K \theta'_kT_k(\tilde L)x $$  
-  
-  Set $k = 1$ and $\lambda_{max} \approx 2$for layer-wise convolution operation and using single parameter.  
-  
-  $$ g_\theta \star x \approx \theta (I_N + D^{-1/2}AD^{-1/2})x $$  
-  
-  For avoiding exploding/vanishing gradients, use renormalization trick   
-  
-  $$ Z = \tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}X\Theta$$
+  But for expensive computation cost, approximated by a truncated expansion in term of Chebyshev polynomials $T_k(x)$
+  ![spectral graph convolutions](img/spectralgraph.png)
+  Set $k = 1$ and $\lambda_{max} \approx 2$for layer-wise convolution operation and using single parameter.
+  ![expression](img/gtheta.png)
+  For avoiding exploding/vanishing gradients, use renormalization trick
+  ![renormalization trick](img/renormalization_track.png)
 
-#### model
+- model
 In paper, they use only two-layer GCN for semi-supervised node classification on graph
 
-$$ Z = f(X, A) = softmax(\hat A ReLU(\hat AXW^{(0)})W^{(1)}) $$  
-
+![model simple form](img/model.png)
 - Annotation
-  1) $X$ : input data $[N,C]$
-  2) $\hat{A}$ : symmetric adjacency matrix $[N,N]$
+  1) $X$ : input data [$N$, $C$]
+  2) $\hat{A}$ : symmetric adjacency matrix [$N$, $N$]
   3) $W^{(l)}$ : l-th layer weight  
-  4) Z : $[N,F]$
+  4) Z : [N, F]
 
   In Cora dataset, 
   $N$ = 2708. $C$ = 1433
   $F$ = 7
 
+  In PPI dataset
+  $N$ = 56944 $C$ = 50
+  $F$ = 3769
+
 - Weight
 1) first-layer : input-to-hidden weight matrix
-  $W^{(0)}$  $[C,H]$
+  $W^{(0)}$  [$C$, $H$]
 2) second-layer : hidden-to-output weight matrix
-  $W^{(1)}$ $[H,F]$
-- Loss : cross-entropy error  
-
-$$ \mathcal{L} = - \sum_{l\in{\mathcal{Y}_L}} {\sum_{f=1}^F {Y_{lf}lnZ_{lf}}} $$
+  $W^{(1)}$ [$H$, $F$]
+- Loss : cross-entropy error
+$$\mathcal{L} = - \sum_{l\in{\mathcal{Y}_L}} {\sum_{f=1}^F {Y_{lf}lnZ_{lf}}}$$
 
 ## Requirements
 
