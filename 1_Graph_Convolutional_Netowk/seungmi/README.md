@@ -9,7 +9,7 @@ For a high-level introduction to GCNs, see:
 
 Thomas Kipf, [Graph Convolutional Networks](http://tkipf.github.io/graph-convolutional-networks/) (2016)
 
-![Graph Convolutional Networks](img/figure.png)
+![Graph Convolutional Networks](figure.png)
 
 ### Semi-Supervised Node Classification
 
@@ -20,16 +20,15 @@ This implementation makes use of the Cora dataset from [2].
   Using node feature as signal, transformed signal to Fourier domain
   But for expensive computation cost, approximated by a truncated expansion in term of Chebyshev polynomials $T_k(x)$  
 
-  $$ g_\theta \star x \approx \sum_{k=0}^K \theta'_kT_k(\tilde L)x $$
+$$ g_\theta \star x \approx \sum_{k=0}^K \theta'_kT_k(\tilde L)x $$  
 
   Set $k = 1$ and $\lambda_{max} \approx 2$for layer-wise convolution operation and using single parameter.  
 
-  $$ g_\theta \star x \approx \theta (I_N + D^{-1/2}AD^{-1/2})x $$
+$$ g_\theta \star x \approx \theta (I_N + D^{-1/2}AD^{-1/2})x $$  
 
   For avoiding exploding/vanishing gradients, use renormalization trick  
 
-  $$ Z = \tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}X\Theta$$
-
+$$ Z = \tilde{D}^{-1/2}\tilde{A}\tilde{D}^{-1/2}X\Theta$$  
 
 - model
 In paper, they use only two-layer GCN for semi-supervised node classification on graph
