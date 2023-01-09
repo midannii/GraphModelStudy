@@ -44,6 +44,8 @@ $$ Z = f(X, A) = softmax(\hat A ReLU(\hat AXW^{(0)})W^{(1)}) $$
   $N$ = 56944 $C$ = 50
   $F$ = 3769
 
+  
+
 - Weight
 1) first-layer : input-to-hidden weight matrix
   $W^{(0)}$  $[C, H]$
