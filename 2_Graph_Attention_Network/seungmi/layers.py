@@ -23,14 +23,32 @@ class GraphAttentionLayer(nn.Module):
 
         self.leakyrelu = nn.LeakyReLU(self.alpha)
 
+    '''
+    In Paper definition,
+        for last layer, averaging multi heads attention and using activation function(nonlinearity) - ELU 
+        for other layer, concatenation attention coefficients and using nonlinearity activation function - softmax/logistic sigmoid
+    In experimental, 
+        for first layer, using K = 8 attention heads -> F' = 8 features each nodes
+                         using ELU activation function [nonlinearity]
+        for second layer(prediction layer), using single attention head 
+                                            using softmax activation activation function
+    '''
     def forward(self, h, adj):
+        
+        #calculate attention coefficient
+        #usgin shared weight W
         Wh = torch.mm(h, self.W) # h.shape: (N, in_features), Wh.shape: (N, out_features)
         e = self._prepare_attentional_mechanism_input(Wh)
-
         zero_vec = -9e15*torch.ones_like(e)
+        #torch.where(condition , [x|if True, x] , [y|if Flase, y])
+        #calculate source node which connected with target node
         attention = torch.where(adj > 0, e, zero_vec)
         attention = F.softmax(attention, dim=1)
+
+        #In Transductive learning -> dropout input as p = 0.6
         attention = F.dropout(attention, self.dropout, training=self.training)
+
+        #calculate feature representation
         h_prime = torch.matmul(attention, Wh)
 
         if self.concat:
