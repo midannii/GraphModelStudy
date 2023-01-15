@@ -1,110 +1,77 @@
-from __future__ import division
-from __future__ import print_function
+from utils import *
 
-import time
-import argparse
-import numpy as np
+'''
+A toy Protein-Protein Interaction network dataset. 
+The dataset contains 24 graphs. The average number of nodes per graph is 2372. 
+Each node has 50 features and 121 labels. 
+20 graphs for training, 2 for validation and 2 for testing.
+'''
 
-import torch
-import torch.nn.functional as F
-import torch.optim as optim
+def load_ppi_data(dataset='PPI'):
+    print('Loading {} dataset...'.format(dataset))
+    train_data = PPIDataset(mode='train') # 20개의 그래프에 총 44906개의 node 
+    valid_data = PPIDataset(mode='valid') # 2개의 그래프에 총 6514개의 node 
+    test_data = PPIDataset(mode='test') # 2개의 그래프에 총 5524개의 node 
+    ## total dataset 개수 = 44906+6514+5524 = 56944
+    
+    # make feature & label from DGL graph 
+    features, labels = [],[]
+    for d in train_data: 
+        features.append(d.ndata['feat'])
+        #labels.append(d.ndata['label'])
+        for node in d.nodes(): labels.append(node)
+    l_train = 44906
+    for d in valid_data: 
+        features.append(d.ndata['feat'])
+        #labels.append(d.ndata['label'])
+        for node in d.nodes(): labels.append(node)
+    l_valid = 6514
+    for d in test_data: 
+        features.append(d.ndata['feat'])
+        #labels.append(d.ndata['label'])
+        for node in d.nodes(): labels.append(node)
+    l_test = 5524
+    features = torch.cat(features, 0) # shape: (56944, 50)
+    #labels = torch.cat(labels, 0) # shape: (56944, 121)
+    labels = torch.tensor(labels)
+    print('## labels: ', labels.shape)
+    
+    # link in dataset : train 1,271,274 + valid 205,434 + test 167,500 = 1,644,208
+    # adjacency matrix 
+    edges = []
+    for d in train_data: 
+        edges1, edges2 = d.edges()
+        for j in range(len(edges1)): edges.append([int(edges1[j]), int(edges2[j])]) # 1,271,274개
+    for d in valid_data: 
+        edges1, edges2 = d.edges()
+        for j in range(len(edges1)): edges.append([int(edges1[j]), int(edges2[j])]) # 205,434개 
+    for d in test_data: 
+        edges1, edges2 = d.edges()
+        for j in range(len(edges1)): edges.append([int(edges1[j]), int(edges2[j])]) # 167,500개
+    edges = np.array(edges) # shape: (1644208, 2)
+    ### node의 종류는 (0,3480)
+    adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])), 
+                        shape=(features.shape[0], features.shape[0]), dtype=np.float32) # shape: (56944, 56944)
 
-from pygcn.utils import load_data, accuracy
-from pygcn.models import GCN
-from utils_ppi import *
+    # build symmetric adjacency matrix
+    ## Eq. 9에서의 assumption 
+    adj = adj + adj.T.multiply(adj.T > adj) - adj.multiply(adj.T > adj)
+    ## A.multiply(B): Point-wise multiplication A*B 
+    
+    # normalize for spectral graph convolutions (Eq. 3)
+    features = normalize(features)
+    adj = normalize(adj + sp.eye(adj.shape[0])) # make A_tilda in Eq. 2
+    ## sp.eye: Returns a sparse (m x n) matrix where the kth diagonal is all ones and everything else is zeros.
 
-from setproctitle import *
-setproctitle('midannii_GCN')
+    idx_train = range(l_train)
+    idx_val = range(l_train, l_valid)
+    idx_test = range(l_valid, l_test)
 
-# Training settings
-parser = argparse.ArgumentParser()
-parser.add_argument('--no-cuda', action='store_true', default=False,
-                    help='Disables CUDA training.')
-parser.add_argument('--fastmode', action='store_true', default=False,
-                    help='Validate during training pass.')
-parser.add_argument('--seed', type=int, default=42, help='Random seed.')
-parser.add_argument('--epochs', type=int, default=200,
-                    help='Number of epochs to train.')
-parser.add_argument('--lr', type=float, default=0.01,
-                    help='Initial learning rate.')
-parser.add_argument('--weight_decay', type=float, default=5e-4,
-                    help='Weight decay (L2 loss on parameters).')
-parser.add_argument('--hidden', type=int, default=16,
-                    help='Number of hidden units.')
-parser.add_argument('--dropout', type=float, default=0.5,
-                    help='Dropout rate (1 - keep probability).')
+    features = torch.FloatTensor(np.array(features))
+    adj = sparse_mx_to_torch_sparse_tensor(adj)
 
-args = parser.parse_args()
-args.cuda = not args.no_cuda and torch.cuda.is_available()
+    idx_train = torch.LongTensor(idx_train) 
+    idx_val = torch.LongTensor(idx_val) 
+    idx_test = torch.LongTensor(idx_test) 
 
-np.random.seed(args.seed)
-torch.manual_seed(args.seed)
-if args.cuda:
-    torch.cuda.manual_seed(args.seed)
-
-# Load data
-adj, features, labels, idx_train, idx_val, idx_test = load_ppi_data()
-
-# Model and optimizer
-model = GCN(nfeat=features.shape[1],
-            nhid=args.hidden,
-            nclass=labels.max().item() + 1,
-            dropout=args.dropout)
-optimizer = optim.Adam(model.parameters(),
-                       lr=args.lr, weight_decay=args.weight_decay)
-
-if args.cuda:
-    model.cuda()
-    features = features.cuda()
-    adj = adj.cuda()
-    labels = labels.cuda()
-    idx_train = idx_train.cuda()
-    idx_val = idx_val.cuda()
-    idx_test = idx_test.cuda()
-
-
-def train(epoch):
-    t = time.time()
-    model.train()
-    optimizer.zero_grad()
-    output = model(features, adj)
-    loss_train = F.nll_loss(output[idx_train], labels[idx_train])
-    acc_train = accuracy(output[idx_train], labels[idx_train])
-    loss_train.backward()
-    optimizer.step()
-
-    if not args.fastmode:
-        # Evaluate validation set performance separately,
-        # deactivates dropout during validation run.
-        model.eval()
-        output = model(features, adj)
-
-    loss_val = F.nll_loss(output[idx_val], labels[idx_val])
-    acc_val = accuracy(output[idx_val], labels[idx_val])
-    print('Epoch: {:04d}'.format(epoch+1),
-          'loss_train: {:.4f}'.format(loss_train.item()),
-          'acc_train: {:.4f}'.format(acc_train.item()),
-          'loss_val: {:.4f}'.format(loss_val.item()),
-          'acc_val: {:.4f}'.format(acc_val.item()),
-          'time: {:.4f}s'.format(time.time() - t))
-
-
-def test():
-    model.eval()
-    output = model(features, adj)
-    loss_test = F.nll_loss(output[idx_test], labels[idx_test])
-    acc_test = accuracy(output[idx_test], labels[idx_test])
-    print("Test set results:",
-          "loss= {:.4f}".format(loss_test.item()),
-          "accuracy= {:.4f}".format(acc_test.item()))
-
-
-# Train model
-t_total = time.time()
-for epoch in range(args.epochs):
-    train(epoch)
-print("Optimization Finished!")
-print("Total time elapsed: {:.4f}s".format(time.time() - t_total))
-
-# Testing
-test()
+    return adj, features, labels, idx_train, idx_val, idx_test
