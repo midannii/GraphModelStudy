@@ -11,6 +11,7 @@ from torch.optim import Adam
 from models.definitions.GAT import GAT
 from utils.data_loading import load_graph_data
 from utils.constants import *
+from setproctitle import setproctitle
 import utils.utils as utils
 
 
@@ -33,10 +34,10 @@ def get_main_loop(config, gat, sigmoid_cross_entropy_loss, optimizer, patience_p
         # We merge them into a single graph with 2 connected components, that's the main idea. After that
         # the implementation #3 is agnostic to the fact that those are multiple and not a single graph!
         for batch_idx, (node_features, gt_node_labels, edge_index) in enumerate(data_loader):
-            # Push the batch onto GPU - note PPI is to big to load the whole dataset into a normal GPU
+            # Push the batch onto GPU - note PPI is too big to load the whole dataset into a normal GPU
             # it takes almost 8 GBs of VRAM to train it on a GPU
-            edge_index = edge_index.to(device)
-            node_features = node_features.to(device)
+            edge_index = edge_index.to(device) #[2, 219744]
+            node_features = node_features.to(device) # [6792, 50]
             gt_node_labels = gt_node_labels.to(device)
 
             # I pack data into tuples because GAT uses nn.Sequential which expects this format
@@ -222,16 +223,31 @@ def get_training_args():
 
     # I'm leaving the hyperparam values as reported in the paper, but I experimented a bit and the comments suggest
     # how you can make GAT achieve an even higher micro-F1 or make it smaller
+    
     gat_config = {
         # GNNs, contrary to CNNs, are often shallow (it ultimately depends on the graph properties)
-        "num_of_layers": 3,  # PPI has got 42% of nodes with all 0 features - that's why 3 layers are useful
-        "num_heads_per_layer": [4, 4, 6],  # other values may give even better results from the reported ones
-        "num_features_per_layer": [PPI_NUM_INPUT_FEATURES, 256, 256, PPI_NUM_CLASSES],  # 64 would also give ~0.975 uF1!
+        "num_of_layers": 4,  # PPI has got 42% of nodes with all 0 features - that's why 3 layers are useful
+        "num_heads_per_layer": [4, 4, 6, 6],  # other values may give even better results from the reported ones
+        "num_features_per_layer": [PPI_NUM_INPUT_FEATURES, 256, 256, 256, PPI_NUM_CLASSES],  # 64 would also give ~0.975 uF1!
         "add_skip_connection": True,  # skip connection is very important! (keep it otherwise micro-F1 is almost 0)
         "bias": True,  # bias doesn't matter that much
         "dropout": 0.0,  # dropout hurts the performance (best to keep it at 0)
-        "layer_type": LayerType.IMP3  # the only implementation that supports the inductive setting
+        "layer_type": LayerType.IMP4  # the only implementation that supports the inductive setting
     }
+    
+    '''
+    gat_config = {
+        # GNNs, contrary to CNNs, are often shallow (it ultimately depends on the graph properties)
+        "num_of_layers": 2,  # PPI has got 42% of nodes with all 0 features - that's why 3 layers are useful
+        "num_heads_per_layer": [4, 6],  # other values may give even better results from the reported ones
+        "num_features_per_layer": [PPI_NUM_INPUT_FEATURES, 256, PPI_NUM_CLASSES],  # 64 would also give ~0.975 uF1!
+        "add_skip_connection": True,  # skip connection is very important! (keep it otherwise micro-F1 is almost 0)
+        "bias": True,  # bias doesn't matter that much
+        "dropout": 0.2,  # dropout hurts the performance (best to keep it at 0)
+        "layer_type": LayerType.IMP1  # transductive setting
+    }
+    '''
+
 
     # Wrapping training configuration into a dictionary
     training_config = dict()
@@ -246,6 +262,6 @@ def get_training_args():
 
 
 if __name__ == '__main__':
-
+    setproctitle("kyuhwan-GAT")
     # Train the graph attention network (GAT)
     train_gat_ppi(get_training_args())
