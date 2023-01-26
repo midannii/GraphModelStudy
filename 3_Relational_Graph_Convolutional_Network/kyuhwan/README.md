@@ -6,6 +6,13 @@ Torch-RGCN is a PyTorch implementation of the RGCN, originally proposed by Schli
 In our [paper](https://arxiv.org/abs/2107.10015), we reproduce the link prediction  and node classification experiments from the original 
 paper and using our reproduction we explain the RGCN. Furthermore, we present two new configurations of the RGCN. 
 
+## Link prediction for FB-Toutanova (FB15K-237)
+Epoch : 3000
+MRR (Filtered) : 0.153
+Hits@1(filtered) : 0.073
+Hits@3(filtered) : 0.162
+Hits@10(filtered) : 0.323
+
 ## Getting started
 
 Requirements: 

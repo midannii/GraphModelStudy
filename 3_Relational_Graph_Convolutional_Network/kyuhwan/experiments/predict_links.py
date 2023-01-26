@@ -1,6 +1,9 @@
+import sys
+sys.path.append('.')
 from utils.misc import *
 from torch_rgcn.models import LinkPredictor, CompressionRelationPredictor
 from utils.data import load_link_prediction_data
+from setproctitle import setproctitle
 import torch.nn.functional as F
 import torch
 import time
@@ -10,6 +13,7 @@ Relational Graph Convolution Network for link prediction.
 Reproduced as described in https://arxiv.org/abs/1703.06103 (Section 4).
 """
 
+setproctitle("kyuhwan-RGCN")
 
 # Create sacred object for experiment tracking
 ex = create_experiment(name='R-GCN Link Prediction ', database='link_pred')

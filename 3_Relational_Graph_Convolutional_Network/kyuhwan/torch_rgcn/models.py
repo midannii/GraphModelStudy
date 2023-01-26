@@ -53,7 +53,7 @@ class LinkPredictor(nn.Module):
         self.node_embeddings = nn.Parameter(torch.FloatTensor(nnodes, nemb))
         self.node_embeddings_bias = nn.Parameter(torch.zeros(1, nemb))
         init = select_w_init(encoder_w_init)
-        init(self.node_embeddings)
+        init(self.node_embeddings) #here, shape is missing
         # Checkpoint 1
         # print('self.node_embeddings')
         # print('min', torch.min(self.node_embeddings))
@@ -129,7 +129,7 @@ class LinkPredictor(nn.Module):
         print('mean', torch.mean(scores))
         print('std', torch.std(scores))
         print('size', scores.size())
-        exit()
+        #exit()
         penalty = self.compute_penalty(triples, x)
         return scores, penalty
 

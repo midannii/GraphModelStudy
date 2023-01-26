@@ -220,6 +220,10 @@ def load_link_prediction_data(name, use_test_set=False, limit=None):
         train_file = locate_file('data/wn18rr/train.txt')
         val_file = locate_file('data/wn18rr/valid.txt')
         test_file = locate_file('data/wn18rr/test.txt')
+    elif name.lower() == 'fb-toutanova':
+        train_file = locate_file('data/fb-toutanova/train.txt')
+        val_file = locate_file('data/fb-toutanova/valid.txt')
+        test_file = locate_file('data/fb-toutanova/test.txt')
     else:
         raise ValueError(f'Could not find \'{name}\' dataset')
 

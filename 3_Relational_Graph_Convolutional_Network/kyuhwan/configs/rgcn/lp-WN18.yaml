@@ -26,7 +26,7 @@ encoder:
     general: 0.5  # Dropout rate for all edges (except self-loops)
     self_loop: 0.2  # Dropout rate for self-loops
     self_loop_type: schlichtkrull-dropout
-  weight_init: schlichtkrull-normal  # Weight Initialisation
+  weight_init: xavier-normal  # Weight Initialisation
   include_gain: False  # Add scaling factor depending on the type of non-linearity function used
   bias_init: zeros  # Bias Initialisation (Delete this line to remove biases)
 
