@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+torch_rgcn/__init__.py
+torch_rgcn/layers.py
+torch_rgcn/models.py
+torch_rgcn/utils.py
+torch_rgcn.egg-info/PKG-INFO
+torch_rgcn.egg-info/SOURCES.txt
+torch_rgcn.egg-info/dependency_links.txt
+torch_rgcn.egg-info/not-zip-safe
+torch_rgcn.egg-info/top_level.txt
