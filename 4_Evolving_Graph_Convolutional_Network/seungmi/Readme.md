@@ -29,28 +29,10 @@ This docker file describes a container that allows you to run the experiments on
 
 ### Requirements
 
-- [install docker](https://docs.docker.com/install/)
 - [install nvidia drivers](https://www.nvidia.com/Download/index.aspx?lang=en-us)
-
-### Installation
-
-#### 1. Build the image
-
-From this folder you can create the image
-
-```sh
-sudo docker build -t gcn_env:latest docker-set-up/
-```
-
-#### 2. Start the container
-
-Start the container
-
-```sh
-sudo docker run -ti  --gpus all -v $(pwd):/evolveGCN  gcn_env:latest
-```
-
-This will start a bash session in the container.
+- matplotlib
+- pandas
+- scikit-learn
 
 ## Usage
 
@@ -67,7 +49,6 @@ Setting 'use_logfile' to True in the configuration yaml will output a file, in t
 ```sh
 python log_analyzer.py log/filename.log
 ```
-
 
 ## Reference
 
