@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from matplotlib import pyplot as plt
+from gat import *
 import pdb
 from torch_geometric.utils import dense_to_sparse, f1_score
 from gcn import GCNConv
@@ -29,6 +30,13 @@ class GTN(nn.Module):
                 layers.append(GTLayer(num_edge, num_channels, num_nodes, first=True))
             else:
                 layers.append(GTLayer(num_edge, num_channels, num_nodes, first=False))
+        self.gat = GraphAttentionLayer(
+            in_features=w_in,  # consequence of concatenation
+            out_features=self.w_out,
+            dropout = 0.0,
+            alpha = 0.2,
+            concat = False
+        )
         self.layers = nn.ModuleList(layers)
         self.loss = nn.CrossEntropyLoss()
         self.gcn = GCNConv(in_channels=self.w_in, out_channels=w_out)
@@ -68,6 +76,15 @@ class GTN(nn.Module):
                 H, W = self.layers[i](A, H)
             H = self.normalization(H)
             Ws.append(W)
+
+        for i in range(self.num_channels): ##### 여기서부터 GAT!
+            if i==0:
+                X_ = self.gat(X, H[i])
+            else:
+                X_tmp = self.gat(X,H[i])
+                X_ = torch.cat((X_,X_tmp), dim=1)
+
+        """
         for i in range(self.num_channels):
             if i==0:
                 edge_index, edge_weight = H[i][0], H[i][1]
@@ -76,6 +93,7 @@ class GTN(nn.Module):
             else:
                 edge_index, edge_weight = H[i][0], H[i][1]
                 X_ = torch.cat((X_,F.relu(self.gcn(X,edge_index=edge_index.detach(), edge_weight=edge_weight))), dim=1)
+        """
         X_ = self.linear1(X_)
         X_ = F.relu(X_)
         y = self.linear2(X_[target_x])

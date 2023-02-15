@@ -4,6 +4,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import math
 from matplotlib import pyplot as plt
+from gat import *
 import pdb
 
 
@@ -25,10 +26,17 @@ class GTN(nn.Module):
             else:
                 layers.append(GTLayer(num_edge, num_channels, first=False))
         self.layers = nn.ModuleList(layers)
+        self.gat = GraphAttentionLayer(
+                in_features=w_in,  # consequence of concatenation
+                out_features=self.w_out,
+                dropout = 0.0,
+                alpha = 0.2,
+                concat = False
+            )
         self.weight = nn.Parameter(torch.Tensor(w_in, w_out))
         self.bias = nn.Parameter(torch.Tensor(w_out))
         self.loss = nn.CrossEntropyLoss()
-        self.linear1 = nn.Linear(self.w_out*self.num_channels, self.w_out)
+        self.linear1 = nn.Linear(self.w_out*self.num_channels, self.w_out) # # node dimension * # channels -> #node dimension
         self.linear2 = nn.Linear(self.w_out, self.num_class)
         self.reset_parameters()
 
@@ -79,13 +87,23 @@ class GTN(nn.Module):
         #H,W2 = self.layer2(A, H)
         #H = self.normalization(H)
         #H,W3 = self.layer3(A, H)
-        for i in range(self.num_channels):
+
+        """
+        for i in range(self.num_channels): ##### 여기서부터 GCN!
             if i==0:
                 X_ = F.relu(self.gcn_conv(X,H[i]))
             else:
                 X_tmp = F.relu(self.gcn_conv(X,H[i]))
                 X_ = torch.cat((X_,X_tmp), dim=1)
-        X_ = self.linear1(X_)
+        """
+        for i in range(self.num_channels): ##### 여기서부터 GAT!
+            if i==0:
+                X_ = self.gat(X, H[i])
+            else:
+                X_tmp = self.gat(X,H[i])
+                X_ = torch.cat((X_,X_tmp), dim=1)
+
+        X_ = self.linear1(X_) # [18405, 128]
         X_ = F.relu(X_)
         y = self.linear2(X_[target_x])
         loss = self.loss(y, target)
@@ -122,7 +140,7 @@ class GTConv(nn.Module):
         super(GTConv, self).__init__()
         self.in_channels = in_channels
         self.out_channels = out_channels
-        self.weight = nn.Parameter(torch.Tensor(out_channels,in_channels,1,1))
+        self.weight = nn.Parameter(torch.Tensor(out_channels,in_channels,1,1)) # in_channels : 5, out_channels : 2
         self.bias = None
         self.scale = nn.Parameter(torch.Tensor([0.1]), requires_grad=False)
         self.reset_parameters()

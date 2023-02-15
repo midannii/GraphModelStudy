@@ -7,6 +7,9 @@ import pdb
 import pickle
 import argparse
 from utils import f1_score
+from setproctitle import setproctitle
+
+setproctitle("kyuhwan-GTN")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
