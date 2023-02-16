@@ -20,7 +20,8 @@ class GTN(nn.Module):
         self.num_class = num_class
         self.num_layers = num_layers
         self.args = args
-        self.is_gcn = args.is_gcn
+        self.is_gcn = False#args.is_gcn
+        print('mode :: ', self.is_gcn)
         layers = []
         for i in range(num_layers):
             if i == 0:
@@ -34,7 +35,7 @@ class GTN(nn.Module):
         else:
             self.loss = nn.CrossEntropyLoss()
         self.gcn = GCNConv(in_channels=self.w_in, out_channels=w_out, args=args)
-        self.gat = GraphAttentionLayer(in_features=self.w_in, out_features=w_out)
+        self.gat = GraphAttentionLayer(in_features=self.w_in, out_features=self.w_out)
         self.linear = nn.Linear(self.w_out*self.num_channels, self.num_class)
 
     def normalization(self, H, num_nodes):
@@ -77,15 +78,14 @@ class GTN(nn.Module):
                 if self.is_gcn:
                     X_ = self.gcn(X,edge_index=edge_index.detach(), edge_weight=edge_weight)
                 else: 
-                    X_ = self.gat(X,edge_index=edge_index.detach(), edge_weight=edge_weight)
+                    X_ = self.gat(X, H[i])
                 X_ = F.relu(X_)
             else:
                 if self.is_gcn: 
                     X_tmp = F.relu(self.gcn(X,edge_index=edge_index.detach(), edge_weight=edge_weight))
                 else: 
-                    X_tmp = F.relu(self.gat(X,edge_index=edge_index.detach(), edge_weight=edge_weight))
+                    X_tmp = F.relu(self.gat(X, H[i]))
                 X_ = torch.cat((X_,X_tmp), dim=1)
-
         y = self.linear(X_[target_x])
         if eval:
             return y
