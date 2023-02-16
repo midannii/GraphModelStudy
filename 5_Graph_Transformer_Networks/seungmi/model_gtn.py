@@ -33,7 +33,7 @@ class GTN(nn.Module):
         else:
             self.loss = nn.CrossEntropyLoss()
         # self.gcn = GCNConv(in_channels=self.w_in, out_channels=w_out, args=args)
-        self.gat = GAT(self.w_in, self.w_out, args.dropout, args.alpha, args.nb_heads)
+        self.gat = GAT(self.w_in, self.w_out, args, args.dropout, args.alpha, args.nb_heads)
         self.linear = nn.Linear(self.w_out*self.num_channels, self.num_class)
 
     def normalization(self, H, num_nodes):
@@ -65,18 +65,24 @@ class GTN(nn.Module):
         Ws = []
         for i in range(self.num_layers):
             if i == 0:
+                #W = cat(softmax(gcnWeight))
+                #H = Q1Q2
                 H, W = self.layers[i](A, num_nodes, eval=eval)
             else:                
                 H, W = self.layers[i](A, num_nodes, H, eval=eval)
             H = self.normalization(H, num_nodes)
+
             Ws.append(W)
+
         for i in range(self.num_channels):
+            # Q1Q2 indice, value
             edge_index, edge_weight = H[i][0], H[i][1]
+            edge_weight = torch.sparse_coo_tensor(edge_index, edge_weight, (num_nodes, num_nodes)).to(edge_index.device)
             if i==0:                
-                X_ = self.gat(X, adj=edge_index.detach(), edge_weight=edge_weight)
+                X_ = self.gat(X, edge_weight)
                 X_ = F.relu(X_)
             else:
-                X_tmp = F.elu(self.gat(X,adj=edge_index.detach(), edge_weight=edge_weight))
+                X_tmp = F.elu(self.gat(X, edge_weight))
                 X_ = torch.cat((X_,X_tmp), dim=1)
 
         y = self.linear(X_[target_x])
@@ -108,6 +114,7 @@ class GTLayer(nn.Module):
             result_A = self.conv1(A, num_nodes, eval=eval)
             result_B = self.conv2(A, num_nodes, eval=eval)                
             W = [(F.softmax(self.conv1.weight, dim=1)),(F.softmax(self.conv2.weight, dim=1))]
+            # print(W[0].size())
         else:
             result_A = H_
             result_B = self.conv1(A, num_nodes, eval=eval)
@@ -119,8 +126,10 @@ class GTLayer(nn.Module):
             mat_a = torch.sparse_coo_tensor(a_edge, a_value, (num_nodes, num_nodes)).to(a_edge.device)
             mat_b = torch.sparse_coo_tensor(b_edge, b_value, (num_nodes, num_nodes)).to(a_edge.device)
             mat = torch.sparse.mm(mat_a, mat_b).coalesce()
+            # print(mat.size())
             edges, values = mat.indices(), mat.values()
             # edges, values = torch_sparse.spspmm(a_edge, a_value, b_edge, b_value, num_nodes, num_nodes, num_nodes)
+            # print(edges.size(), values.size())
             H.append((edges, values))
         return H, W
 

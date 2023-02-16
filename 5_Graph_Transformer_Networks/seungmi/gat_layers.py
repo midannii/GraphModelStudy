@@ -7,13 +7,14 @@ class GraphAttentionLayer(nn.Module):
     """
     Simple GAT layer, similar to https://arxiv.org/abs/1710.10903
     """
-    def __init__(self, in_features, out_features, dropout, alpha, concat=True):
+    def __init__(self, in_features, out_features, args, dropout, alpha, concat=True):
         super(GraphAttentionLayer, self).__init__()
         self.dropout = dropout
         self.in_features = in_features
         self.out_features = out_features
         self.alpha = alpha
         self.concat = concat
+        self.args = args
 
         self.W = nn.Parameter(torch.zeros(size=(in_features, out_features)))
         nn.init.xavier_normal_(self.W.data, gain=1.414)
@@ -33,27 +34,17 @@ class GraphAttentionLayer(nn.Module):
         for second layer(prediction layer), using single attention head 
                                             using softmax activation activation function
     '''
-    def forward(self, h, adj, edge_weight):
+    def forward(self, h, edge_weight):
         
         #calculate attention coefficient
         #usgin shared weight W
         # self.W -> get weight from input
-        edge_weight = edge_weight.view(-1)
-        loop_weight = torch.full((h.size(0), ),
-                                1 if not self.args.remove_self_loops else 0,
-                                dtype=edge_weight.dtype,
-                                device=edge_weight.device)
-        edge_weight = torch.cat([edge_weight, loop_weight], dim=0)
-
-        norm = torch.matmul(adj, edge_weight)
-        print(norm)
-        pre_h = torch.matmul(h,norm)
-        Wh = torch.matmul(pre_h, self.W) # h.shape: (N, in_features), Wh.shape: (N, out_features)
+        Wh = torch.matmul(h, self.W) # h.shape: (N, in_features), Wh.shape: (N, out_features)
         e = self._prepare_attentional_mechanism_input(Wh)
         zero_vec = -9e15*torch.ones_like(e)
         #torch.where(condition , [x|if True, x] , [y|if Flase, y])
         #calculate source node which connected with target node
-        attention = torch.where(adj > 0, e, zero_vec)
+        attention = torch.where(edge_weight.to_dense() > 0, e, zero_vec)
         attention = F.softmax(attention, dim=1)
 
         #In Transductive learning -> dropout input as p = 0.6

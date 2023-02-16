@@ -121,7 +121,8 @@ if __name__ == '__main__':
                                 num_class=num_classes,
                                 num_layers=num_layers,
                                 num_nodes=num_nodes,
-                                args=args)        
+                                args=args)
+            model = nn.DataParallel(model, output_device=1)     
         elif args.model == 'FastGTN':
             if args.pre_train and l == 1:
                 pre_trained_fastGTNs = []
