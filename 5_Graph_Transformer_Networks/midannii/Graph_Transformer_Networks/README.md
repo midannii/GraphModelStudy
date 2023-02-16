@@ -1,6 +1,9 @@
 2023/2/16
 
-GCN layer -> GAT layer Result in `output_gat.txt` 
+
+GCN layer -> GAT layer Result in `output_gat.txt` with running 
+
+``` $ python main.py --dataset IMDB --model GTN --num_layers 2 --epoch 50 --lr 0.02 --num_channels 2 --is_gcn False ```
 
 
 --------------------------------------
