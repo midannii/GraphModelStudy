@@ -1,0 +1,54 @@
+main.py:69: DeprecationWarning: Please use `csr_matrix` from the `scipy.sparse` namespace, the `scipy.sparse.csr` namespace is deprecated.
+  edges = pickle.load(f)
+Run 0
+--------------------Best Result-------------------------
+Train - Loss: 1.7190, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0947, Macro_F1: 0.6983, Micro_F1: 0.7033
+Test - Loss: 1.7190, Macro_F1: 0.5397, Micro_F1: 0.5490
+Run 1
+--------------------Best Result-------------------------
+Train - Loss: 0.9979, Macro_F1: 0.9767, Micro_F1: 0.9767
+Valid - Loss: 0.7465, Macro_F1: 0.6997, Micro_F1: 0.7033
+Test - Loss: 0.9979, Macro_F1: 0.5828, Micro_F1: 0.6003
+Run 2
+--------------------Best Result-------------------------
+Train - Loss: 1.0497, Macro_F1: 0.9833, Micro_F1: 0.9833
+Valid - Loss: 0.7693, Macro_F1: 0.7011, Micro_F1: 0.7033
+Test - Loss: 1.0497, Macro_F1: 0.5809, Micro_F1: 0.5977
+Run 3
+--------------------Best Result-------------------------
+Train - Loss: 1.1312, Macro_F1: 0.9900, Micro_F1: 0.9900
+Valid - Loss: 0.8118, Macro_F1: 0.6997, Micro_F1: 0.7033
+Test - Loss: 1.1312, Macro_F1: 0.5829, Micro_F1: 0.5998
+Run 4
+--------------------Best Result-------------------------
+Train - Loss: 1.4290, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0543, Macro_F1: 0.7070, Micro_F1: 0.7067
+Test - Loss: 1.4290, Macro_F1: 0.5701, Micro_F1: 0.5921
+Run 5
+--------------------Best Result-------------------------
+Train - Loss: 0.8776, Macro_F1: 0.9233, Micro_F1: 0.9233
+Valid - Loss: 0.7636, Macro_F1: 0.7090, Micro_F1: 0.7133
+Test - Loss: 0.8776, Macro_F1: 0.5843, Micro_F1: 0.5968
+Run 6
+--------------------Best Result-------------------------
+Train - Loss: 1.6324, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0613, Macro_F1: 0.7138, Micro_F1: 0.7200
+Test - Loss: 1.6324, Macro_F1: 0.5353, Micro_F1: 0.5417
+Run 7
+--------------------Best Result-------------------------
+Train - Loss: 1.4297, Macro_F1: 0.9967, Micro_F1: 0.9967
+Valid - Loss: 0.9991, Macro_F1: 0.6985, Micro_F1: 0.7000
+Test - Loss: 1.4297, Macro_F1: 0.5693, Micro_F1: 0.5879
+Run 8
+--------------------Best Result-------------------------
+Train - Loss: 0.8869, Macro_F1: 0.9300, Micro_F1: 0.9300
+Valid - Loss: 0.6890, Macro_F1: 0.7002, Micro_F1: 0.7033
+Test - Loss: 0.8869, Macro_F1: 0.5882, Micro_F1: 0.6020
+Run 9
+--------------------Best Result-------------------------
+Train - Loss: 0.9764, Macro_F1: 0.9766, Micro_F1: 0.9767
+Valid - Loss: 0.7364, Macro_F1: 0.6943, Micro_F1: 0.6967
+Test - Loss: 0.9764, Macro_F1: 0.5898, Micro_F1: 0.6071
+--------------------Final Result-------------------------
+Test - Macro_F1: 0.5723+0.0185, Micro_F1:0.5874+0.0217

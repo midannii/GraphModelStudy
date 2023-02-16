@@ -1,0 +1,51 @@
+Run 0
+--------------------Best Result-------------------------
+Train - Loss: 1.4788, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 0.9620, Macro_F1: 0.6979, Micro_F1: 0.7033
+Test - Loss: 1.4788, Macro_F1: 0.5430, Micro_F1: 0.5515
+Run 1
+--------------------Best Result-------------------------
+Train - Loss: 0.9258, Macro_F1: 0.8668, Micro_F1: 0.8667
+Valid - Loss: 0.8583, Macro_F1: 0.7007, Micro_F1: 0.7033
+Test - Loss: 0.9258, Macro_F1: 0.5844, Micro_F1: 0.5956
+Run 2
+--------------------Best Result-------------------------
+Train - Loss: 1.6158, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0355, Macro_F1: 0.7060, Micro_F1: 0.7133
+Test - Loss: 1.6158, Macro_F1: 0.5376, Micro_F1: 0.5451
+Run 3
+--------------------Best Result-------------------------
+Train - Loss: 0.8759, Macro_F1: 0.9164, Micro_F1: 0.9167
+Valid - Loss: 0.7634, Macro_F1: 0.7024, Micro_F1: 0.7067
+Test - Loss: 0.8759, Macro_F1: 0.5799, Micro_F1: 0.5913
+Run 4
+--------------------Best Result-------------------------
+Train - Loss: 1.6876, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0953, Macro_F1: 0.6912, Micro_F1: 0.6967
+Test - Loss: 1.6876, Macro_F1: 0.5338, Micro_F1: 0.5404
+Run 5
+--------------------Best Result-------------------------
+Train - Loss: 1.5246, Macro_F1: 1.0000, Micro_F1: 1.0000
+Valid - Loss: 1.0065, Macro_F1: 0.6892, Micro_F1: 0.6967
+Test - Loss: 1.5246, Macro_F1: 0.5329, Micro_F1: 0.5413
+Run 6
+--------------------Best Result-------------------------
+Train - Loss: 1.4467, Macro_F1: 0.9900, Micro_F1: 0.9900
+Valid - Loss: 1.0795, Macro_F1: 0.6998, Micro_F1: 0.7000
+Test - Loss: 1.4467, Macro_F1: 0.5747, Micro_F1: 0.5964
+Run 7
+--------------------Best Result-------------------------
+Train - Loss: 1.3565, Macro_F1: 0.9800, Micro_F1: 0.9800
+Valid - Loss: 0.9503, Macro_F1: 0.6990, Micro_F1: 0.7000
+Test - Loss: 1.3565, Macro_F1: 0.5661, Micro_F1: 0.5840
+Run 8
+--------------------Best Result-------------------------
+Train - Loss: 0.8650, Macro_F1: 0.9200, Micro_F1: 0.9200
+Valid - Loss: 0.7070, Macro_F1: 0.7029, Micro_F1: 0.7067
+Test - Loss: 0.8650, Macro_F1: 0.5835, Micro_F1: 0.5973
+Run 9
+--------------------Best Result-------------------------
+Train - Loss: 0.8638, Macro_F1: 0.9300, Micro_F1: 0.9300
+Valid - Loss: 0.7101, Macro_F1: 0.7096, Micro_F1: 0.7133
+Test - Loss: 0.8638, Macro_F1: 0.5867, Micro_F1: 0.6003
+--------------------Final Result-----------------------
