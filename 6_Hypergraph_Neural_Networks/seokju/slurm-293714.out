@@ -1,0 +1,17 @@
+### START DATE=Thu Feb 23 19:56:04 KST 2023
+### HOSTNAME=node01
+### CUDA_VISIBLE_DEVICES=0,1
+True
+data_dir:./datasets/data
+facebook
+lbls:[0.000e+00 1.000e+00 2.000e+00 ... 4.036e+03 4.037e+03 4.038e+03]
+Constructing hypergraph incidence matrix! 
+(It may take several minutes! Please wait patiently!)
+Traceback (most recent call last):
+  File "train.py", line 21, in <module>
+    load_feature_construct_H(data_dir,
+  File "/home/hsjtjrwn/HGNN/HGNN/datasets/visual_data.py", line 72, in load_feature_construct_H
+    return fts, lbls, idx_train, idx_test, H
+NameError: name 'lbls' is not defined
+###
+### END DATE=Thu Feb 23 19:56:15 KST 2023
