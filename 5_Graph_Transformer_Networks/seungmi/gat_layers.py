@@ -7,14 +7,14 @@ class GraphAttentionLayer(nn.Module):
     """
     Simple GAT layer, similar to https://arxiv.org/abs/1710.10903
     """
-    def __init__(self, in_features, out_features, args, dropout, alpha, concat=True):
+    def __init__(self, in_features, out_features, n, dropout, alpha, concat=True):
         super(GraphAttentionLayer, self).__init__()
         self.dropout = dropout
         self.in_features = in_features
         self.out_features = out_features
         self.alpha = alpha
         self.concat = concat
-        self.args = args
+        self.zero_vec = torch.zeros_like(torch.empty(n, n))
 
         self.W = nn.Parameter(torch.zeros(size=(in_features, out_features)))
         nn.init.xavier_normal_(self.W.data, gain=1.414)
@@ -34,17 +34,27 @@ class GraphAttentionLayer(nn.Module):
         for second layer(prediction layer), using single attention head 
                                             using softmax activation activation function
     '''
-    def forward(self, h, edge_weight):
+    def forward(self, h, edge_index):
         
         #calculate attention coefficient
         #usgin shared weight W
         # self.W -> get weight from input
         Wh = torch.matmul(h, self.W) # h.shape: (N, in_features), Wh.shape: (N, out_features)
         e = self._prepare_attentional_mechanism_input(Wh)
-        zero_vec = -9e15*torch.ones_like(e)
+        attention = self.zero_vec.to(h.device)
         #torch.where(condition , [x|if True, x] , [y|if Flase, y])
         #calculate source node which connected with target node
-        attention = torch.where(edge_weight.to_dense() > 0, e, zero_vec)
+
+        # edge_weight = edge_weight.to_dense()
+        # for i in range(edge_weight.size(0)):
+        #     for j in range(edge_weight.size(1)):
+        #         if edge_weight[i][j] > 0:
+        #             attention[i][j] = e[i][j]
+        #         else:
+        #             attention[i][j] = zero_vec[i][j]
+        for i in range(edge_index.size(-1)):
+            attention[edge_index[0][i]][edge_index[1][i]] = e[edge_index[0][i]][edge_index[1][i]]
+        # attention = torch.where(edge_weight > 0, e, zero_vec)
         attention = F.softmax(attention, dim=1)
 
         #In Transductive learning -> dropout input as p = 0.6

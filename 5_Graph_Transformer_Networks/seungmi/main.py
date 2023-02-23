@@ -34,7 +34,7 @@ if __name__ == '__main__':
                         help='number of runs')
     parser.add_argument("--channel_agg", type=str, default='concat')
     parser.add_argument("--remove_self_loops", action='store_true', help="remove_self_loops")
-    parser.add_argument('--nb_heads', type=int, default=8, help='Number of head attentions.')
+    parser.add_argument('--nb_heads', type=int, default=2, help='Number of head attentions.')
     parser.add_argument('--dropout', type=float, default=0.6, help='Dropout rate (1 - keep probability).')
     parser.add_argument('--alpha', type=float, default=0.2, help='Alpha for the leaky_relu.')
     # Configurations for FastGTNs
@@ -122,7 +122,7 @@ if __name__ == '__main__':
                                 num_layers=num_layers,
                                 num_nodes=num_nodes,
                                 args=args)
-            model = nn.DataParallel(model, output_device=1)     
+            # model = nn.DataParallel(model, output_device=1)     
         elif args.model == 'FastGTN':
             if args.pre_train and l == 1:
                 pre_trained_fastGTNs = []
@@ -156,7 +156,7 @@ if __name__ == '__main__':
         best_test_f1, best_micro_test_f1 = 0, 0
         
         for i in range(epochs):
-            # print('Epoch ',i)
+            print('Epoch ', i)
             model.zero_grad()
             model.train()
             if args.model == 'FastGTN':

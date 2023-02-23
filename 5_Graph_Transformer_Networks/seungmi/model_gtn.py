@@ -33,8 +33,8 @@ class GTN(nn.Module):
         else:
             self.loss = nn.CrossEntropyLoss()
         # self.gcn = GCNConv(in_channels=self.w_in, out_channels=w_out, args=args)
-        self.gat = GAT(self.w_in, self.w_out, args, args.dropout, args.alpha, args.nb_heads)
-        self.linear = nn.Linear(self.w_out*self.num_channels, self.num_class)
+        self.gat = GAT(self.w_in, self.w_out, num_nodes, args.dropout, args.alpha, args.nb_heads)
+        self.linear = nn.Linear(self.w_out*self.num_channels*2, self.num_class) 
 
     def normalization(self, H, num_nodes):
         norm_H = []
@@ -77,12 +77,12 @@ class GTN(nn.Module):
         for i in range(self.num_channels):
             # Q1Q2 indice, value
             edge_index, edge_weight = H[i][0], H[i][1]
-            edge_weight = torch.sparse_coo_tensor(edge_index, edge_weight, (num_nodes, num_nodes)).to(edge_index.device)
+            # edge_weight = torch.sparse_coo_tensor(edge_index, edge_weight, (num_nodes, num_nodes)).to(edge_index.device)
             if i==0:                
-                X_ = self.gat(X, edge_weight)
+                X_ = self.gat(X, edge_index.detach())
                 X_ = F.relu(X_)
             else:
-                X_tmp = F.elu(self.gat(X, edge_weight))
+                X_tmp = F.elu(self.gat(X, edge_index.detach()))
                 X_ = torch.cat((X_,X_tmp), dim=1)
 
         y = self.linear(X_[target_x])
