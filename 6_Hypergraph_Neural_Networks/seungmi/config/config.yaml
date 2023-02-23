@@ -7,7 +7,7 @@
 data_root: &d_r /home/mee0520/GNN_study/HGNN/data_root
 modelnet40_ft: !join [*d_r, ModelNet40_mvcnn_gvcnn.mat]
 ntu2012_ft: !join [*d_r, NTU2012_mvcnn_gvcnn.mat]
-facebook: !join [*d_r, /facebook]
+facebook: !join [*d_r, facebook]
 
 
 #Hypergraph
@@ -46,7 +46,7 @@ ckpt_folder: !join [*r_r, ckpt]
 
 
 #Train
-max_epoch: 600
+max_epoch: 1000
 n_hid: 128
 lr: 0.001
 milestones: [100]

@@ -1,0 +1,176 @@
+### START DATE=Thu Feb 23 11:40:04 KST 2023
+### HOSTNAME=node19
+### CUDA_VISIBLE_DEVICES=0
+Constructing hypergraph incidence matrix! 
+(It may take several minutes! Please wait patiently!)
+[[0. 1. 1. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ ...
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]
+ [0. 0. 0. ... 0. 0. 0.]]
+/home/mee0520/GNN_study/HGNN/utils/hypergraph_utils.py:113: RuntimeWarning: divide by zero encountered in power
+  invDE = np.mat(np.diag(np.power(DE, -1)))
+/home/mee0520/GNN_study/HGNN/utils/hypergraph_utils.py:114: RuntimeWarning: divide by zero encountered in power
+  DV2 = np.mat(np.diag(np.power(DV, -0.5)))
+Classification on facebook dataset!!! class number: 9
+use MVCNN feature: False
+use GVCNN feature: False
+use MVCNN feature for structure: False
+use GVCNN feature for structure: False
+Configuration -> Start
+{'K_neigs': [10],
+ 'ckpt_folder': '/home/mee0520/GNN_study/HGNN/result/hgnn/ckpt',
+ 'data_root': '/home/mee0520/GNN_study/HGNN/data_root',
+ 'decay_rate': 0.7,
+ 'decay_step': 200,
+ 'drop_out': 0.5,
+ 'facebook': '/home/mee0520/GNN_study/HGNN/data_root/facebook',
+ 'gamma': 0.9,
+ 'graph_type': 'hypergraph',
+ 'is_probH': False,
+ 'lr': 0.001,
+ 'm_prob': 1.0,
+ 'max_epoch': 1000,
+ 'milestones': [100],
+ 'modelnet40_ft': '/home/mee0520/GNN_study/HGNN/data_root/ModelNet40_mvcnn_gvcnn.mat',
+ 'n_hid': 128,
+ 'ntu2012_ft': '/home/mee0520/GNN_study/HGNN/data_root/NTU2012_mvcnn_gvcnn.mat',
+ 'on_dataset': 'facebook',
+ 'print_freq': 50,
+ 'result_root': '/home/mee0520/GNN_study/HGNN/result/hgnn',
+ 'result_sub_folder': '/home/mee0520/GNN_study/HGNN/result/hgnn/hypergraph_facebook',
+ 'use_gvcnn_feature': False,
+ 'use_gvcnn_feature_for_structure': False,
+ 'use_mvcnn_feature': False,
+ 'use_mvcnn_feature_for_structure': False,
+ 'weight_decay': 0.0005}
+Configuration -> End
+----------
+Epoch 0/999
+/home/mee0520/anaconda3/envs/parlai/lib/python3.8/site-packages/torch/optim/lr_scheduler.py:131: UserWarning: Detected call of `lr_scheduler.step()` before `optimizer.step()`. In PyTorch 1.1.0 and later, you should call them in the opposite order: `optimizer.step()` before `lr_scheduler.step()`.  Failure to do this will result in PyTorch skipping the first value of the learning rate schedule. See more details at https://pytorch.org/docs/stable/optim.html#how-to-adjust-learning-rate
+  warnings.warn("Detected call of `lr_scheduler.step()` before `optimizer.step()`. "
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 50/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 100/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 150/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 200/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 250/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 300/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 350/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 400/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 450/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 500/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 550/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 600/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 650/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 700/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 750/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 800/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 850/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 900/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+----------
+Epoch 950/999
+train Loss: nan Acc: 0.0910
+val Loss: nan Acc: 0.1064
+Best val Acc: 0.106436
+--------------------
+
+Training complete in 0m 3s
+Best val Acc: 0.106436
+###
+### END DATE=Thu Feb 23 11:40:21 KST 2023

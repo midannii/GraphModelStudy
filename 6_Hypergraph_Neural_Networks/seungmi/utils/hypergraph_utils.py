@@ -176,6 +176,7 @@ def construct_H_with_KNN(X, K_neigs=[10], split_diff_scale=False, is_probH=True,
         H_tmp = construct_H_with_KNN_from_distance(dis_mat, k_neig, is_probH, m_prob)
         if not split_diff_scale:
             H = hyperedge_concat(H, H_tmp)
+            print(H)
         else:
             H.append(H_tmp)
     return H
@@ -186,4 +187,5 @@ def construct_H(adj):
     for i in range(4039):
         for j in adj[i]:
             H[i, j] = 1
+    print(H)
     return H
